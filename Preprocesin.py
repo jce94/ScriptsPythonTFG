@@ -9,8 +9,17 @@ Created on Wed May 16 00:40:01 2018
 import pandas as pd
 from collections import Counter
 
+def printColumnsDataset(df0):
+    '''Muestra las columnas y su indice de un dataSet, imprimiendo por consola.'''
+    cont = 0
+    col = df0.columns
+    print("\n[Indice dataSetGeneral]")
+    for i in range (len(col)):
+        print("[column:",i,"]","-",col[i])
+        cont = cont +1
+    print("Hay ", cont," columnas en total.")
 
-def printColumnsDataset(df0,df1):
+def printColumnsDatasets(df0,df1):
     '''Muestra las columnas y su indice de un dataSet, imprimiendo por consola.'''
     cont = 0
     col = df1.columns
@@ -20,8 +29,34 @@ def printColumnsDataset(df0,df1):
         cont = cont +1
     print("Hay ", cont," columnas en total.")
     
-
-def printColumnsDatasetIfContains(df0,df1,subCadena):
+def printColumnsDatasetIfContains(df0,subCadena):
+    '''Muestra las columnas y su indice de un dataSet, imprimiendo por consola,
+    si contienen una subcadena que se le pasa por parámetro.'''
+    cont = 0
+    col = df0.columns
+    print("\n[Indice dataSetGeneral] - columna sub Dataset:",subCadena,".\n")
+    for i in range (len(col)):
+        if (subCadena in col[i]):        
+            print("[column:",i,"]","-",col[i])
+            cont = cont +1
+    print("Hay ", cont," columnas en total.")
+    
+    
+def printColumnsDatasetIfContainsWithPercentNullValues(df0,subCadena):
+    '''Muestra las columnas y su indice de un dataSet, imprimiendo por consola,
+    si contienen una subcadena que se le pasa por parámetro.'''
+    cont = 0
+    col = df0.columns
+    print("\n[Indice dataSetGeneral] - columna sub Dataset:",subCadena,".\n")
+    for i in range (len(col)):
+        if (subCadena in col[i]):
+            #Calculo del porcentaje de NanValues de la columna
+            n = "{0:.2f}".format((df0.iloc[:,i].isnull().sum())/(len(df0))*100)
+            print("[column:",i,"]","-",col[i],"-",n,"% de NanValues")
+            cont = cont +1
+    print("Hay ", cont," columnas en total.")
+    
+def printColumnsDatasetsIfContains(df0,df1,subCadena):
     '''Muestra las columnas y su indice de un dataSet, imprimiendo por consola,
     si contienen una subcadena que se le pasa por parámetro.'''
     cont = 0
@@ -116,13 +151,22 @@ COLUMNAS: NET
     16  -  net.activity-duration-up
     17  -  net.activity-duration-down
 '''
-a = list(range(17,25))
-b = list(range(26,30))
-c = [35,46,47,89,90,91]
+net = dataSet.iloc[:,0:18]
+'''
+COLUMNAS: EVENT
+    [column: 11 ] - event.text
+    [column: 12 ] - event.timestamp
+    [column: 25 ] - event.interim-id
+    [column: 42 ] - event.start-time
+    [column: 43 ] - event.stop-time
+'''
 
-vector = a + b + c #Unión de los vectores
-net = dataSet.iloc[:,vector]
+vector = [11,12,25,42,43]
+event = dataSet.iloc[:,vector]
 
+
+#Eliminacion del dataSet "event" de las filas que en alguna columna tinen un nan.
+dataEvent = event.dropna()
 #Eliminacion del dataSet "bearer" de las filas que en alguna columna tinen un nan.
 dataBearer = bearer.dropna()
 #Eliminacion del dataSet "location" de las filas que en alguna columna tinen un nan.
@@ -135,12 +179,16 @@ dataNet = net.dropna()
 arrayCounter_dataBearer = funtionCounter(dataBearer)
 arrayCounter_dataLocation = funtionCounter(dataLocation)
 arrayCounter_dataNet = funtionCounter(dataNet)
+arrayCounter_dataEvent= funtionCounter(dataEvent)
 
 '''BORRADO DE VARIABLES AUXILIARES'''
 del a,b,c, vector
 #%%
-#printColumnsDataset(dataSet,location)
-printColumnsDatasetIfContains(dataSet,net,"net")
 
+#printColumnsDataset(dataSet)
+#printColumnsDatasets(dataSet,location)
+#printColumnsDatasetsIfContains(dataSet,net,"event")
+#printColumnsDatasetIfContains(dataSet,"http")
+printColumnsDatasetIfContainsWithPercentNullValues(dataSet,"gtp")
 #%%
     
